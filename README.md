@@ -1,16 +1,3 @@
-// -------------------------------------------------------------
-//
-// !\file README.md
-// !\brief Overview of the vault.hpp container
-// !\author Colin J.D. Stewart
-//
-// -------------------------------------------------------------
-//
-//             Copyright (c) 2025. Colin J.D. Stewart
-//                     All rights reserved
-//
-// -------------------------------------------------------------
-
 # `vault<T>` – Lightweight Dynamic Slot Container
 
 The `vault<T>` container is a high-performance, minimal-overhead replacement for std::vector-style storage,
