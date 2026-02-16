@@ -1,125 +1,64 @@
-# <ProjectName>
+# `vault<T>` – Lightweight Dynamic Slot Container
 
-Short one-paragraph description of what this project is and what problem it solves.
+The `vault<T>` container is a high-performance, minimal-overhead replacement for std::vector-style storage,
+designed to support stack-like semantics, pointer-stable elements, and fast rollback functionality.
 
----
+## 🔧 Features
 
-## Overview
+- Manual memory control with raw allocation
+- Fast `emplace()` to store objects and retrieve stable `T*` pointers
+- Safe `checkpoint()` and `restore()` to manage temporary storage
+- Lock/seal mechanism to restrict or freeze access
+- No standard library dependencies other than basic types
 
-This project follows a structured, modular C++ layout designed for:
+## 🚀 Usage Example
 
-- Clear separation of source and build artefacts
-- Reusable components
-- Clean dependency management
-- Scalable test structure
-- Long-term maintainability
+```cpp
+vault<MyType> v;
+v.emplace(1, 2, 3);
+v.checkpoint();
 
-The repository is suitable for both library-style and executable-style projects.
+auto* p = v.emplace(99);
+v.restore();  // removes p safely
+```
 
----
+## 📚 Key Methods
 
-## Repository Structure
+| Method             | Description |
+|--------------------|-------------|
+| `emplace(args...)` | Constructs and stores an object, returns `T*` |
+| `get(index)`       | Returns `T*` at index (throws on error) |
+| `checkout(index)`  | Alias for `get()` for API clarity |
+| `checkin(ptr)`     | Currently a no-op; placeholder for future reuse logic |
+| `checkpoint()`     | Pushes a rollback point onto internal stack |
+| `restore()`        | Destroys elements added after the last checkpoint |
+| `clear()`          | Clears all elements and resets state |
+| `seal()`           | Prevents further growth or mutation |
+| `lock()`           | Marks critical section (optional use) |
 
-/bld Final build artefacts (executables, shared libraries)
+## 🔐 Safety
 
-/dep External dependencies
-/docs Project documentation
+This container avoids `std::realloc()` for non-trivial types and moves objects using placement `new`.
+It guarantees stable addresses for all inserted objects as long as they are not restored or cleared.
 
-/src
-bin/ Entry points (e.g. main.cpp)
-inc/ Header files
-lib/ Implementation source files
-bld/ Intermediate build artefacts (objects, static libs)
+## 📁 Integration
 
-tst/
-ut/ Unit tests
-sy/ System tests
-bld/ Test build artefacts
+Place `vault.hpp` inside your `src/inc` or shared `dep/` directory and include it with:
 
+```cpp
+#include "vault.hpp"
+```
 
-### Build Artefact Policy
+## 🧪 Unit Tests
 
-- `src/bld/` and `src/tst/bld/` contain intermediate compilation output.
-- `/bld` at the repository root contains final distributable artefacts.
-- Build output is not committed to the repository.
+Test coverage is provided in `test_vault.cpp` using the `shocktest` framework. Run:
 
----
+```bash
+make uts
+```
 
-## Requirements
+to compile and execute tests.
 
-- C++ compiler (C++17 or C++20 recommended)
-- Make
-- POSIX-compatible environment (Linux, macOS, WSL, etc.)
+## 📄 License
 
----
-
-## Build
-
-### Default build
-
-make
-
-### Release build
-
-make MODE=release
-
-
-### Run
-
-./bld/<ProjectName>
-
-
----
-
-## Testing
-
-Unit tests:
-
-make tests
-
-
-System tests may require additional configuration depending on project scope.
-
----
-
-## Dependencies
-
-External components are located in `/dep`.
-
-See:
-
-dep/README.md
-
-
-for dependency management strategy.
-
----
-
-## Documentation
-
-All architectural and design documentation lives in:
-
-docs/
-
-
-Start with:
-
-docs/README.md
-
-
----
-
-## Philosophy
-
-This repository aims to:
-
-- Keep implementation separate from interface
-- Keep build artefacts separate from source
-- Support both standalone and reusable component development
-- Scale from small utilities to large modular systems
-
----
-
-## Licence
-
-See `LICENSE`.
+See the docs LICENSE file for usage terms.
