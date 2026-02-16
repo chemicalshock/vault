@@ -3,6 +3,8 @@
 #
 UT_MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 REPO_ROOT := $(abspath $(UT_MAKEFILE_DIR)/../../..)
+# Include moved to bottom so test targets are defined before rule generation
+# include $(REPO_ROOT)/dep/shocktest/src/tst/ut/makefile.shocktest.mk
 
 # ------------------------------
 # SUT targets (none yet)
@@ -18,9 +20,11 @@ REPO_ROOT := $(abspath $(UT_MAKEFILE_DIR)/../../..)
 X86CPPTARGET += TEST_VAULT
 TEST_VAULT,SRCS := test_vault.cpp
 TEST_VAULT,USRLIBS := 
-TEST_VAULT,CPPFLAGS := $(GLOBAL_CPPFLAGS)
+TEST_VAULT,CPPFLAGS = $(GLOBAL_CPPFLAGS)
 TEST_VAULT,LDFLAGS :=
-
 
 # Include shocktest makefile from dep/shocktest symlink (no absolute path).
 include $(REPO_ROOT)/dep/shocktest/src/tst/ut/makefile.shocktest.mk
+
+
+

@@ -207,8 +207,8 @@ public:
         return m_slots[index];
     }
 
-    T* operator[](size_t index) { return get(index); }
-    const T* operator[](size_t index) const { return get(index); }
+    T& operator[](size_t index) { T* p = get(index); return *p; }
+    const T& operator[](size_t index) const { const T* p = get(index); return *p; }
 
     T* top() {
         if (m_stack == 0) throw std::runtime_error("vault::top empty");
@@ -227,10 +227,11 @@ public:
 
     size_t size() const { return m_stack; }           // Stack size
     bool empty() const { return m_stack == 0; }
-    size_t count() const { return m_size; }           // Number of owned elements
+    size_t count() const { return m_stack; }           // Number of total slot pointers (owned + external)
     size_t capacity() const { return m_capacity; }    // Capacity for owned elements
     size_t max_size() const { return m_capacity; }    // Alias for capacity()
     size_t pointer_count() const { return m_stack; }  // Number of total slot pointers (owned + external)
+    size_t owned_count() const { return m_size; }     // Number of owned elements
 
 
     void clear_stack() { m_stack = 0; }
@@ -263,6 +264,42 @@ public:
 
     void seal() { sealed = true; }
     bool is_sealed() const { return sealed; }
+    
+    // Additional helpers expected by tests
+    size_t checkpoint_depth() const { return checkpoint_count; }
+    void clear_checkpoints() { checkpoint_count = 0; }
+
+    // Checkout removes the slot at index and returns the pointer.
+    T* checkout(size_t index) {
+        if (m_stack == 0) throw std::runtime_error("vault::checkout empty");
+        if (index >= m_stack) throw std::out_of_range("vault::checkout out of range");
+        T* p = m_slots[index];
+        // shift left
+        for (size_t i = index; i + 1 < m_stack; ++i) m_slots[i] = m_slots[i+1];
+        --m_stack;
+        return p;
+    }
+
+    // Return raw pointer to owned buffer
+    T* data() { return buffer; }
+    const T* data() const { return buffer; }
+
+    // Simple bidirectional iterator over slot elements (dereferences to T&)
+    struct iterator {
+        vault* parent = nullptr;
+        size_t idx = 0;
+        iterator() = default;
+        iterator(vault* p, size_t i) : parent(p), idx(i) {}
+        T& operator*() const { return *parent->m_slots[idx]; }
+        T* operator->() const { return parent->m_slots[idx]; }
+        iterator& operator++() { ++idx; return *this; }
+        iterator& operator--() { --idx; return *this; }
+        bool operator==(const iterator& o) const { return parent == o.parent && idx == o.idx; }
+        bool operator!=(const iterator& o) const { return !(*this == o); }
+    };
+
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, m_stack); }
 };
 
 #endif // VAULT_HPP

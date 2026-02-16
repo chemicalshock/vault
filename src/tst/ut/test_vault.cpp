@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 // shocktest
-#include "shocktest/src/inc/shocktest.hpp"
+#include "shocktest/shocktest.hpp"
 
 // sut
 #include "vault.hpp"
