@@ -54,7 +54,7 @@ Place `vault.hpp` inside your `src/inc` or shared `dep/` directory and include i
 Test coverage is provided in `test_vault.cpp` using the `shocktest` framework. Run:
 
 ```bash
-make uts
+make ut
 ```
 
 to compile and execute tests.
