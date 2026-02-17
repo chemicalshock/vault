@@ -2,17 +2,17 @@
 #
 # !\file makefile.project
 # !\brief Makefile for project specifics.
-# !\author <author>
+# !\author Colin J.D. Stewart
 #
 # --------------------------------------------------------------------
-#             Copyright (c) 2026. <copyright holder>
+#             Copyright (c) 2026. Colin J.D. Stewart
 #                     All rights reserved
 # --------------------------------------------------------------------
 
 #
 # project identification
 #
-PROJECT ?= cpp-template
+PROJECT ?= vault
 
 BIN_NAME ?= $(PROJECT)
 LIB_BASENAME ?= $(PROJECT)
